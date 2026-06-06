@@ -248,6 +248,59 @@
     display: inline-block;
   }
 
+  /* ── Personal ─────────────────────────────────────────── */
+  .personal-lede {
+    font-family: var(--serif);
+    font-size: 1.02rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    margin: 18px 0 0;
+  }
+  .personal-figure {
+    margin: 24px 0 0;
+  }
+  .personal-figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 3px;
+    border: 1px solid var(--rule);
+  }
+  .personal-figure figcaption {
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    color: var(--ink-mute);
+    margin-top: 8px;
+  }
+  .accolade {
+    padding: 18px 0;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .accolade:last-of-type { border-bottom: none; }
+  .accolade h3 {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 1.2rem;
+    margin: 0 0 4px;
+    color: var(--moss-deep);
+  }
+  .accolade p {
+    font-family: var(--serif);
+    font-size: 0.98rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+  .accolade a {
+    color: var(--moss-deep);
+    text-decoration: underline;
+    text-decoration-color: var(--rule);
+    text-underline-offset: 3px;
+    transition: text-decoration-color 0.18s ease;
+  }
+  .accolade a:hover { text-decoration-color: var(--moss); }
+
   /* ── Colophon ─────────────────────────────────────────── */
   .colophon {
     margin-top: 80px;
@@ -434,6 +487,40 @@
         </p>
         <span class="arrow">Open project →</span>
       </a>
+    </section>
+
+    <!-- ── Personal ───────────────────────────────────── -->
+    <section class="section">
+      <h2 class="section-head">Personal</h2>
+
+      <p class="personal-lede">
+        Outside of work I'm a keen homebrewer, with a soft spot for dark and
+        big beers. My seasonal pursuits run to the outdoors — mushroom foraging
+        in autumn and big game hunting.
+      </p>
+
+      <figure class="personal-figure">
+        <img src="assets/personal.jpg" alt="Eirik Hoem"
+             onerror="this.closest('.personal-figure').style.display='none'">
+      </figure>
+
+      <div class="accolade">
+        <h3>Homebrewing — Norwegian Championship</h3>
+        <p>
+          1st place in the <em>Dark ale</em> category at the
+          <a href="https://norbrygg.no/nyheter/2026-05-01/finaleresultater-nm-i-hjemmebrygging-2026/" target="_blank" rel="noopener">2026 Norwegian Homebrewers Championship</a>,
+          and 2nd place in the same category in
+          <a href="https://norbrygg.no/nm-i-hjemmebrygging-alle/nm2024/2024-05-06/finaleresultater-nm-2024/" target="_blank" rel="noopener">2024</a>.
+        </p>
+      </div>
+
+      <div class="accolade">
+        <h3>Recipe — “Futen II” English Barleywine (2024)</h3>
+        <p>
+          My English barleywine recipe is shared over on
+          <a href="https://web.brewfather.app/share/oPSDR84vSQLvhQ" target="_blank" rel="noopener">Brewfather</a>.
+        </p>
+      </div>
     </section>
 
     <footer class="colophon">
