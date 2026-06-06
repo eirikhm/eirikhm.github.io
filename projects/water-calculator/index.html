@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vannjustering — Bryggekalkulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper:        #f3efe6;
+    --paper-deep:   #ebe5d6;
+    --ink:          #1d211b;
+    --ink-soft:     #4a5147;
+    --ink-mute:     #8a8d83;
+    --rule:         #d6cfbe;
+    --rule-soft:    #e3ddcc;
+    --moss:         #3a5535;
+    --moss-deep:    #28391f;
+    --copper:       #a35a2c;
+    --warn-bg:      #f0d9d2;
+    --warn-ink:     #6b2618;
+    --serif:        "Fraunces", "Iowan Old Style", Georgia, serif;
+    --sans:         "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(58, 85, 53, 0.04), transparent 45%),
+      radial-gradient(circle at 90% 80%, rgba(163, 90, 44, 0.05), transparent 50%);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 56px 28px 96px;
+  }
+
+  /* ── Masthead ─────────────────────────────────────────── */
+  .masthead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 56px;
+    gap: 16px;
+  }
+  .masthead .mark {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 1.05rem;
+    font-style: italic;
+    letter-spacing: -0.01em;
+    color: var(--moss-deep);
+  }
+  .masthead .mark::before {
+    content: "❦";
+    margin-right: 8px;
+    color: var(--copper);
+    font-style: normal;
+  }
+  .masthead .kicker {
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    font-weight: 500;
+  }
+
+  /* ── Title block ──────────────────────────────────────── */
+  .title-block {
+    margin-bottom: 44px;
+  }
+  .eyebrow {
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--copper);
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+  h1 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: clamp(2.4rem, 6vw, 3.6rem);
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    margin: 0 0 18px;
+    color: var(--ink);
+  }
+  h1 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--moss);
+  }
+  .lede {
+    font-family: var(--serif);
+    font-size: 1.12rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    max-width: 56ch;
+    margin: 0;
+  }
+  .lede + .lede { margin-top: 0.7em; }
+
+  /* ── Alert ────────────────────────────────────────────── */
+  .alert {
+    background: var(--warn-bg);
+    color: var(--warn-ink);
+    padding: 12px 18px;
+    border-radius: 2px;
+    margin-bottom: 24px;
+    font-size: 0.9rem;
+    border-left: 3px solid var(--warn-ink);
+    display: none;
+  }
+  .alert.show { display: block; }
+
+  /* ── Form ─────────────────────────────────────────────── */
+  .calc {
+    margin-top: 8px;
+  }
+  .field {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .field:first-of-type { border-top: 1px solid var(--rule); }
+
+  .field label {
+    font-family: var(--sans);
+    font-size: 0.74rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    font-weight: 600;
+  }
+
+  .field .control {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .field input,
+  .field select {
+    font-family: var(--serif);
+    font-size: 1.5rem;
+    font-weight: 500;
+    background: transparent;
+    border: none;
+    color: var(--ink);
+    padding: 4px 0;
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    border-radius: 0;
+  }
+  .field input::-webkit-outer-spin-button,
+  .field input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .field input[type="number"] { -moz-appearance: textfield; }
+
+  .field select {
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%233a5535' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 4px center;
+    padding-right: 28px;
+    cursor: pointer;
+  }
+
+  .field input:focus,
+  .field select:focus {
+    outline: none;
+    background-color: rgba(58, 85, 53, 0.04);
+  }
+  .field:focus-within label { color: var(--moss); }
+
+  .field input:disabled,
+  .field select:disabled {
+    color: var(--ink-mute);
+    cursor: not-allowed;
+  }
+  .field .unit {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--ink-mute);
+    white-space: nowrap;
+  }
+  .field input:disabled + .unit { color: var(--rule); }
+
+  .actions {
+    margin-top: 28px;
+    display: flex;
+    justify-content: flex-end;
+  }
+  button.beregn {
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    background: var(--moss-deep);
+    color: var(--paper);
+    border: none;
+    padding: 14px 28px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background 0.18s ease, transform 0.18s ease;
+  }
+  button.beregn:hover:not(:disabled) {
+    background: var(--ink);
+  }
+  button.beregn:active:not(:disabled) { transform: translateY(1px); }
+  button.beregn:disabled {
+    background: var(--rule);
+    color: var(--paper);
+    cursor: not-allowed;
+  }
+
+  /* ── Result ───────────────────────────────────────────── */
+  .result {
+    margin-top: 56px;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    pointer-events: none;
+  }
+  .result.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .result-head {
+    border-top: 2px solid var(--ink);
+    padding-top: 16px;
+    margin-bottom: 22px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+  .result-head h2 {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 1.6rem;
+    line-height: 1.1;
+    margin: 0;
+    color: var(--ink);
+  }
+  .result-head .for {
+    font-style: normal;
+    color: var(--ink-mute);
+    font-size: 0.9em;
+    font-weight: 400;
+  }
+  .result-head .meta {
+    font-family: var(--sans);
+    font-size: 0.74rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    font-weight: 500;
+  }
+
+  .additions {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .addition {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: 20px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .addition:last-child { border-bottom: none; }
+
+  .addition .compound {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .addition .formula {
+    font-family: var(--serif);
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .addition .name {
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    color: var(--ink-mute);
+    letter-spacing: 0.04em;
+  }
+  .addition .where {
+    font-family: var(--sans);
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    font-weight: 500;
+    margin-top: 2px;
+    display: block;
+    width: 100%;
+  }
+
+  .addition .amount {
+    font-family: var(--serif);
+    font-size: 1.7rem;
+    font-weight: 500;
+    color: var(--moss-deep);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .addition .amount .unit {
+    font-style: italic;
+    font-size: 0.6em;
+    color: var(--ink-mute);
+    font-weight: 400;
+    margin-left: 4px;
+  }
+  .addition.zero .amount {
+    color: var(--rule);
+    font-style: italic;
+  }
+  .addition.zero .amount::before {
+    content: "—";
+  }
+  .addition.zero .amount .num,
+  .addition.zero .amount .unit { display: none; }
+
+  /* ── Footnote ─────────────────────────────────────────── */
+  .footnote {
+    margin-top: 32px;
+    padding: 18px 22px;
+    background: rgba(58, 85, 53, 0.05);
+    border-left: 2px solid var(--moss);
+    font-family: var(--serif);
+    font-size: 0.94rem;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+  .footnote strong {
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--moss-deep);
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  /* ── Colophon ─────────────────────────────────────────── */
+  .colophon {
+    margin-top: 80px;
+    padding-top: 22px;
+    border-top: 1px solid var(--rule);
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    color: var(--ink-mute);
+    line-height: 1.6;
+  }
+  .colophon a {
+    color: var(--moss-deep);
+    text-decoration: underline;
+    text-decoration-color: var(--rule);
+    text-underline-offset: 3px;
+    transition: text-decoration-color 0.18s ease;
+  }
+  .colophon a:hover { text-decoration-color: var(--moss); }
+  .colophon p { margin: 0.4em 0; }
+</style>
+</head>
+<body>
+  <main class="page">
+
+    <header class="masthead">
+      <a class="mark" href="/" style="text-decoration:none;">← Eirik H. Mathisen</a>
+      <span class="kicker">Bryggekalkulator · Norsk vann</span>
+    </header>
+
+    <section class="title-block">
+      <div class="eyebrow">Kalkulator</div>
+      <h1>Vann­­­justering<em>.</em></h1>
+      <p class="lede">
+        Beregner mineral­tilsetninger til meske- og skyllevann basert på ølstil.
+        Tallene følger Gahr Smith-Gahrsens vann­justerings­tabell, opprinnelig publisert
+        i medlems­seksjonen på Norbrygg.
+      </p>
+      <p class="lede">
+        Tabellen forutsetter relativt mineral­fattig norsk drikkevann — for de fleste
+        kommunale vannkilder i Norge gir den et godt utgangspunkt.
+      </p>
+    </section>
+
+    <div id="alert" class="alert" role="alert"></div>
+
+    <form class="calc" id="calcForm" novalidate>
+
+      <div class="field">
+        <label for="selType">Stilart</label>
+        <div class="control">
+          <select id="selType" name="selType" required>
+            <option value="none">Velg stilart …</option>
+            <option value="Altbier">Altbier</option>
+            <option value="American amber">American amber</option>
+            <option value="American Brown ale">American Brown ale</option>
+            <option value="American imperial amber">American imperial amber</option>
+            <option value="American pale ale">American pale ale</option>
+            <option value="Barley wine">Barley wine</option>
+            <option value="Belgisk pale ale">Belgisk pale ale</option>
+            <option value="Biere de garde">Biere de garde</option>
+            <option value="Bitter">Bitter</option>
+            <option value="Bock">Bock</option>
+            <option value="Brown ale">Brown ale</option>
+            <option value="California Common">California Common</option>
+            <option value="Dortmunder">Dortmunder</option>
+            <option value="Dry irish stout">Dry irish stout</option>
+            <option value="Dubbel">Dubbel</option>
+            <option value="Dunkelweizen">Dunkelweizen</option>
+            <option value="Dunkles">Dunkles</option>
+            <option value="English pale ale">English pale ale</option>
+            <option value="Helles">Helles</option>
+            <option value="Hellesbock">Hellesbock</option>
+            <option value="India pale ale">India pale ale</option>
+            <option value="Kölsch">Kölsch</option>
+            <option value="Mild">Mild</option>
+            <option value="Mørk saison">Mørk saison</option>
+            <option value="Old ale/winter warmer">Old ale/winter warmer</option>
+            <option value="Porter">Porter</option>
+            <option value="Quadrupel">Quadrupel</option>
+            <option value="Saison">Saison</option>
+            <option value="Sparkling ale">Sparkling ale</option>
+            <option value="Stout">Stout</option>
+            <option value="Tripel">Tripel</option>
+            <option value="Tsjekkisk pils">Tsjekkisk pils</option>
+            <option value="Tysk pils">Tysk pils</option>
+            <option value="Weizenbock">Weizenbock</option>
+            <option value="Witbier">Witbier</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="inpMeskevann">Meskevann</label>
+        <div class="control">
+          <input type="number" id="inpMeskevann" min="0" step="0.1" placeholder="0" disabled>
+          <span class="unit">liter</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="inpSkyllevann">Skyllevann</label>
+        <div class="control">
+          <input type="number" id="inpSkyllevann" min="0" step="0.1" placeholder="0" disabled>
+          <span class="unit">liter</span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="beregn" id="btnBeregn" disabled>Beregn</button>
+      </div>
+    </form>
+
+    <section class="result" id="result" aria-live="polite">
+      <header class="result-head">
+        <h2><span class="for">Tilsetninger for </span><span id="resStyle">—</span></h2>
+        <span class="meta" id="resVolumes">—</span>
+      </header>
+      <ul class="additions" id="additions"></ul>
+      <div class="footnote">
+        <strong>Bruks­anvisning</strong>
+        CaSO₄ og CaCl₂ tilsettes i både meske- og skyllevann.
+        CaCO₃ og NaHCO₃ tilsettes <em>kun</em> i mesken — disse er lite løselige
+        i nøytralt vann og felles ut om de tilsettes skyllevannet.
+        Tabellen oppgir gram pr. 10 liter vann.
+      </div>
+    </section>
+
+    <footer class="colophon">
+      <p>
+        Reprodusert etter <a href="https://web.archive.org/web/20250430185613/http://www.bryggekalkulator.no/Calculator/Water" target="_blank" rel="noopener">bryggekalkulator.no</a>
+        (Glenn R. Lie). Tabell og artikkel av Gahr Smith-Gahrsen,
+        bryggerimester ved 7 Fjell Bryggeri.
+      </p>
+      <p>
+        Kilder: <a href="https://forum.norbrygg.no/threads/artikkel-vann.4764/" target="_blank" rel="noopener">Norbrygg-forumet</a> ·
+        <a href="https://blogg.bryggselv.no/vannjustering-en-innforing/" target="_blank" rel="noopener">Bryggselv blogg</a> ·
+        <a href="https://www.howtobrew.com/section3/chapter15-4.html" target="_blank" rel="noopener">Palmer, How to Brew</a>
+      </p>
+    </footer>
+
+  </main>
+
+<script>
+/* ──────────────────────────────────────────────────────────
+   Gahr Smith-Gahrsens vannjusteringstabell
+   Gram pr. 10 liter vann.
+   [CaSO4, CaCl2, CaCO3 (mesk), NaHCO3 (mesk)]
+   ────────────────────────────────────────────────────────── */
+const TABLE = {
+  // 1 g CaSO4, 2 g CaCl2 (begge i mesk+skyll)
+  "Tsjekkisk pils":          [1,   2,   0, 0],
+  "Helles":                  [1,   2,   0, 0],
+  "Kölsch":                  [1,   2,   0, 0],
+  "Hellesbock":              [1,   2,   0, 0],   // Helles Bock
+
+  // 2 g CaSO4, 1 g CaCl2
+  "Witbier":                 [2,   1,   0, 0],   // Belgisk Wit
+  "Tysk pils":               [2,   1,   0, 0],
+  "Dortmunder":              [2,   1,   0, 0],
+  "Saison":                  [2,   1,   0, 0],
+  "Tripel":                  [2,   1,   0, 0],   // Belgisk Tripel
+
+  // 2 g CaSO4, 1 g CaCl2, 1 g CaCO3, 1 g NaHCO3
+  "Mørk saison":             [2,   1,   1, 1],   // Saison Noir
+
+  // 1 g CaSO4, 2 g CaCl2, 1 g CaCO3, 1 g NaHCO3
+  "Biere de garde":          [1,   2,   1, 1],
+  "Belgisk pale ale":        [1,   2,   1, 1],
+
+  // 1 g CaSO4, 1 g CaCl2, 2 g CaCO3, 1 g NaHCO3
+  "Dubbel":                  [1,   1,   2, 1],   // Belgisk Dubbel
+  "Quadrupel":               [1,   1,   2, 1],   // Belgisk Quadrupel
+  "Dunkelweizen":            [1,   1,   2, 1],
+  "Weizenbock":              [1,   1,   2, 1],
+
+  // 2 g CaSO4, 2 g CaCl2, 1 g CaCO3, 2 g NaHCO3
+  "Altbier":                 [2,   2,   1, 2],
+  "Bitter":                  [2,   2,   1, 2],
+  "Barley wine":             [2,   2,   1, 2],
+  "California Common":       [2,   2,   1, 2],   // California Common/Steam Beer
+
+  // 1 g CaSO4, 1,5 g CaCl2, 1 g CaCO3, 2 g NaHCO3
+  "Bock":                    [1,   1.5, 1, 2],
+  "Dunkles":                 [1,   1.5, 1, 2],   // Dunkel
+  "Mild":                    [1,   1.5, 1, 2],
+  "Old ale/winter warmer":   [1,   1.5, 1, 2],
+  "Brown ale":               [1,   1.5, 1, 2],   // Engelsk Brown Ale (English Brown)
+
+  // 1,5 g CaSO4, 1 g CaCl2, 1 g CaCO3, 2 g NaHCO3
+  "American Brown ale":      [1.5, 1,   1, 2],   // Amerikansk Brown Ale
+
+  // English pale ale ikke i originaltabellen — bruker Bitter-profilen som nærmeste match
+  "English pale ale":        [2,   2,   1, 2],   // Bitter-profil
+
+  // 3 g CaSO4, 1 g CaCO3
+  "American pale ale":       [3,   0,   1, 0],   // Amerikansk Pale Ale
+  "Sparkling ale":           [3,   0,   1, 0],
+
+  // 3 g CaCl2, 1 g CaCO3
+  "American amber":          [0,   3,   1, 0],   // Amerikansk Amber Ale
+  "American imperial amber": [0,   3,   1, 0],
+
+  // 4 g CaSO4, 1 g CaCO3, 1 g NaHCO3
+  "India pale ale":          [4,   0,   1, 1],
+
+  // Stout / Porter
+  "Dry irish stout":         [0,   0,   4, 0],
+  "Stout":                   [0,   0,   4, 2],   // Øvrig Stout
+  "Porter":                  [0,   0,   4, 2],
+};
+
+/* ── Henvisninger til DOM-noder ────────────────────────── */
+const $form     = document.getElementById('calcForm');
+const $style    = document.getElementById('selType');
+const $mesk     = document.getElementById('inpMeskevann');
+const $skyll    = document.getElementById('inpSkyllevann');
+const $btn      = document.getElementById('btnBeregn');
+const $alert    = document.getElementById('alert');
+const $result   = document.getElementById('result');
+const $resStyle = document.getElementById('resStyle');
+const $resVol   = document.getElementById('resVolumes');
+const $list     = document.getElementById('additions');
+
+/* ── Stilart-bryter aktiverer felter ───────────────────── */
+$style.addEventListener('change', () => {
+  const enabled = $style.value !== 'none';
+  $mesk.disabled  = !enabled;
+  $skyll.disabled = !enabled;
+  $btn.disabled   = !enabled;
+  if (!enabled) {
+    $mesk.value = '';
+    $skyll.value = '';
+    hideResult();
+  }
+});
+
+/* ── Hjelpere ──────────────────────────────────────────── */
+function showAlert(msg) {
+  $alert.textContent = msg;
+  $alert.classList.add('show');
+}
+function clearAlert() { $alert.classList.remove('show'); $alert.textContent = ''; }
+function hideResult() { $result.classList.remove('show'); }
+function fmt(g) {
+  // Norsk desimal-komma; trim trailing zero
+  if (g === 0) return '0';
+  const rounded = Math.round(g * 100) / 100;
+  return rounded.toString().replace('.', ',');
+}
+
+/* ── Rad-konfig ────────────────────────────────────────── */
+const ROWS = [
+  { formula: 'CaSO₄',  name: 'Kalsiumsulfat',     where: 'Skyllevann', idx: 0, vol: 'skyll' },
+  { formula: 'CaSO₄',  name: 'Kalsiumsulfat',     where: 'Meskevann',  idx: 0, vol: 'mesk'  },
+  { formula: 'CaCl₂',  name: 'Kalsiumklorid',     where: 'Skyllevann', idx: 1, vol: 'skyll' },
+  { formula: 'CaCl₂',  name: 'Kalsiumklorid',     where: 'Meskevann',  idx: 1, vol: 'mesk'  },
+  { formula: 'CaCO₃',  name: 'Kalsiumkarbonat',   where: 'Kun mesk',   idx: 2, vol: 'mesk'  },
+  { formula: 'NaHCO₃', name: 'Natriumbikarbonat', where: 'Kun mesk',   idx: 3, vol: 'mesk'  },
+];
+
+/* ── Beregning ─────────────────────────────────────────── */
+$form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  clearAlert();
+
+  const style = $style.value;
+  const m = parseFloat($mesk.value);
+  const s = parseFloat($skyll.value);
+
+  if (style === 'none') {
+    showAlert('Velg en stilart først.');
+    hideResult();
+    return;
+  }
+  if (isNaN(m) || m <= 0) {
+    showAlert('Oppgi antall liter meskevann (større enn 0).');
+    hideResult();
+    return;
+  }
+  if (isNaN(s) || s < 0) {
+    showAlert('Oppgi antall liter skyllevann (0 eller mer).');
+    hideResult();
+    return;
+  }
+
+  const coef = TABLE[style];
+  if (!coef) {
+    showAlert('Fant ingen oppskrift for valgt stilart.');
+    hideResult();
+    return;
+  }
+
+  $resStyle.textContent = style;
+  $resVol.textContent = `${fmt(m)} l mesk · ${fmt(s)} l skyll`;
+
+  $list.innerHTML = '';
+  ROWS.forEach(row => {
+    const perTen = coef[row.idx];                    // g pr 10 l
+    const volume = row.vol === 'mesk' ? m : s;       // l
+    const grams  = (perTen * volume) / 10;
+    const isZero = grams === 0;
+
+    const li = document.createElement('li');
+    li.className = 'addition' + (isZero ? ' zero' : '');
+    li.innerHTML = `
+      <div class="compound">
+        <span class="formula">${row.formula}</span>
+        <span class="name">${row.name}</span>
+        <span class="where">${row.where}</span>
+      </div>
+      <div class="amount">
+        <span class="num">${fmt(grams)}</span><span class="unit">g</span>
+      </div>
+    `;
+    $list.appendChild(li);
+  });
+
+  $result.classList.add('show');
+  // smooth scroll resultatet inn i syne på små skjermer
+  setTimeout(() => {
+    $result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 80);
+});
+</script>
+</body>
+</html>
