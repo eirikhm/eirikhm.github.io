@@ -167,6 +167,16 @@
     white-space: nowrap;
   }
 
+  .company-about {
+    font-family: var(--serif);
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin: 10px 0 4px;
+    max-width: 60ch;
+  }
+  .company-about + .company-about { margin-top: 0.7em; }
+
   .role {
     padding: 16px 0 4px 0;
     display: grid;
@@ -382,6 +392,20 @@
           <h3 class="company-name"><a href="https://tana.inc/" target="_blank" rel="noopener">Tana</a></h3>
           <span class="company-meta">Full-time · 5 yrs 6 mos</span>
         </div>
+
+        <p class="company-about">
+          Tana is an AI-native workspace that blends notes, tasks, and knowledge into a
+          single, structured graph. Instead of scattering information across documents,
+          everything in Tana is a node that can carry fields, relationships, and context —
+          so your notes become living data you can query, reshape, and build on.
+        </p>
+        <p class="company-about">
+          On top of that graph, Tana layers AI agents and "supertags" that turn freeform
+          capture into actionable workflows: meeting notes that summarize themselves,
+          tasks that route to the right place, and personal knowledge that compounds over
+          time. The mission is simple but ambitious — reinvent how humans, teams, and
+          computers work together.
+        </p>
 
         <div class="role">
           <div class="role-head">
