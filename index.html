@@ -8,6 +8,17 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  // Set theme before first paint to avoid a flash of the wrong color scheme.
+  (function () {
+    try {
+      var saved = localStorage.getItem('theme');
+      var dark = saved ? saved === 'dark'
+                       : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    } catch (e) {}
+  })();
+</script>
 <style>
   :root {
     --paper:        #f3efe6;
@@ -20,9 +31,33 @@
     --moss:         #3a5535;
     --moss-deep:    #28391f;
     --copper:       #a35a2c;
+    --glow-moss:    rgba(58, 85, 53, 0.04);
+    --glow-copper:  rgba(163, 90, 44, 0.05);
+    --card-bg:      rgba(58, 85, 53, 0.05);
+    --card-bg-hover:rgba(58, 85, 53, 0.09);
     --serif:        "Fraunces", "Iowan Old Style", Georgia, serif;
     --sans:         "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   }
+
+  :root[data-theme="dark"] {
+    --paper:        #14160f;
+    --paper-deep:   #1b1e15;
+    --ink:          #ece7d8;
+    --ink-soft:     #b9b6a6;
+    --ink-mute:     #7e8175;
+    --rule:         #353a2c;
+    --rule-soft:    #2a2e22;
+    --moss:         #7fa173;
+    --moss-deep:    #a7c79a;
+    --copper:       #d08a52;
+    --glow-moss:    rgba(127, 161, 115, 0.06);
+    --glow-copper:  rgba(208, 138, 82, 0.06);
+    --card-bg:      rgba(127, 161, 115, 0.08);
+    --card-bg-hover:rgba(127, 161, 115, 0.14);
+  }
+
+  html { color-scheme: light; }
+  html[data-theme="dark"] { color-scheme: dark; }
 
   *, *::before, *::after { box-sizing: border-box; }
 
@@ -32,9 +67,10 @@
     margin: 0;
     background: var(--paper);
     background-image:
-      radial-gradient(circle at 15% 10%, rgba(58, 85, 53, 0.04), transparent 45%),
-      radial-gradient(circle at 90% 80%, rgba(163, 90, 44, 0.05), transparent 50%);
+      radial-gradient(circle at 15% 10%, var(--glow-moss), transparent 45%),
+      radial-gradient(circle at 90% 80%, var(--glow-copper), transparent 50%);
     color: var(--ink);
+    transition: background-color 0.3s ease, color 0.3s ease;
     font-family: var(--sans);
     font-size: 16px;
     line-height: 1.6;
@@ -79,6 +115,32 @@
     color: var(--ink-mute);
     font-weight: 500;
   }
+  .masthead .spacer { flex: 1; }
+
+  /* ── Theme toggle ─────────────────────────────────────── */
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border: 1px solid var(--rule);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: border-color 0.18s ease, color 0.18s ease, background 0.18s ease;
+  }
+  .theme-toggle:hover {
+    border-color: var(--moss);
+    color: var(--moss-deep);
+    background: var(--card-bg);
+  }
+  .theme-toggle svg { width: 18px; height: 18px; }
+  .theme-toggle .icon-sun { display: none; }
+  html[data-theme="dark"] .theme-toggle .icon-sun { display: block; }
+  html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
 
   /* ── Title block ──────────────────────────────────────── */
   .title-block { margin-bottom: 52px; }
@@ -224,13 +286,13 @@
     text-decoration: none;
     padding: 22px 24px;
     margin-top: 18px;
-    background: rgba(58, 85, 53, 0.05);
+    background: var(--card-bg);
     border-left: 2px solid var(--moss);
     border-radius: 2px;
     transition: background 0.18s ease, transform 0.18s ease;
   }
   .project-card:hover {
-    background: rgba(58, 85, 53, 0.09);
+    background: var(--card-bg-hover);
     transform: translateX(2px);
   }
   .project-card h3 {
@@ -371,6 +433,19 @@
 
     <header class="masthead">
       <span class="kicker">Software Engineer · Norway</span>
+      <span class="spacer"></span>
+      <button type="button" class="theme-toggle" id="theme-toggle"
+              aria-label="Toggle dark mode" title="Toggle dark mode">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"/>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+        </svg>
+      </button>
     </header>
 
     <section class="title-block">
@@ -615,6 +690,35 @@
 
   </main>
 
-  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    (function () {
+      var root = document.documentElement;
+      var storageKey = 'theme';
+      var media = window.matchMedia('(prefers-color-scheme: dark)');
+
+      function apply(theme) {
+        root.setAttribute('data-theme', theme);
+      }
+
+      var stored = null;
+      try { stored = localStorage.getItem(storageKey); } catch (e) {}
+      apply(stored || (media.matches ? 'dark' : 'light'));
+
+      // Follow OS changes unless the user has set an explicit preference.
+      media.addEventListener('change', function (e) {
+        var saved = null;
+        try { saved = localStorage.getItem(storageKey); } catch (err) {}
+        if (!saved) apply(e.matches ? 'dark' : 'light');
+      });
+
+      document.getElementById('theme-toggle').addEventListener('click', function () {
+        var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        apply(next);
+        try { localStorage.setItem(storageKey, next); } catch (e) {}
+      });
+    })();
+  </script>
 </body>
 </html>
