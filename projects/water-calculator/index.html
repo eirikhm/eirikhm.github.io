@@ -398,6 +398,51 @@
   }
   .colophon a:hover { text-decoration-color: var(--moss); }
   .colophon p { margin: 0.4em 0; }
+
+  /* -- High contrast mode -----------------------------------------
+     State is in-memory only.
+  ---------------------------------------------------------------- */
+  html[data-hc="on"] {
+    --paper:         #ffffff;
+    --paper-deep:    #f2f2f2;
+    --ink:           #000000;
+    --ink-soft:      #111111;
+    --ink-mute:      #444444;
+    --rule:          #888888;
+    --rule-soft:     #aaaaaa;
+    --moss:          #004d00;
+    --moss-deep:     #003300;
+    --copper:        #7a2e00;
+    --warn-bg:       #fff0ee;
+    --warn-ink:      #5a1000;
+  }
+
+  /* -- High contrast toggle --------------------------------------- */
+  .hc-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border: 1px solid var(--rule);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: border-color 0.18s ease, color 0.18s ease, background 0.18s ease;
+  }
+  .hc-toggle:hover {
+    border-color: var(--moss);
+    color: var(--moss-deep);
+    background: rgba(0, 0, 0, 0.05);
+  }
+  .hc-toggle svg { width: 18px; height: 18px; }
+  html[data-hc="on"] .hc-toggle {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
 </style>
 </head>
 <body>
@@ -406,6 +451,16 @@
     <header class="masthead">
       <a class="mark" href="/" style="text-decoration:none;">← Eirik Hoem</a>
       <span class="kicker">Bryggekalkulator · Norsk vann</span>
+      <span style="flex:1"></span>
+      <button type="button" class="hc-toggle" id="hc-toggle"
+              aria-label="Toggle high contrast" title="Toggle high contrast">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"
+             stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M12 3v18" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/>
+        </svg>
+      </button>
     </header>
 
     <section class="title-block">
@@ -522,6 +577,17 @@
   </main>
 
 <script>
+  // High contrast toggle -- in-memory only, no persistence.
+  (function () {
+    var root = document.documentElement;
+    var hcOn = false;
+    document.getElementById('hc-toggle').addEventListener('click', function () {
+      hcOn = !hcOn;
+      root.setAttribute('data-hc', hcOn ? 'on' : 'off');
+      this.setAttribute('aria-pressed', hcOn);
+    });
+  })();
+
 /* ──────────────────────────────────────────────────────────
    Gahr Smith-Gahrsens vannjusteringstabell
    Gram pr. 10 liter vann.
