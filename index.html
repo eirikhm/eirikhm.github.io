@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" href="translations.json" as="fetch" crossorigin>
 <script>
   // Set theme before first paint to avoid a flash of the wrong color scheme.
   (function () {
@@ -116,6 +117,39 @@
     font-weight: 500;
   }
   .masthead .spacer { flex: 1; }
+
+  /* ── Language toggle ──────────────────────────────────── */
+  .lang-toggle-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .lang-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border: 1px solid var(--rule);
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+    font-size: 1.15rem;
+    line-height: 1;
+    transition: border-color 0.18s ease, background 0.18s ease, opacity 0.18s ease;
+    opacity: 0.45;
+  }
+  .lang-btn:hover {
+    border-color: var(--moss);
+    background: var(--card-bg);
+    opacity: 1;
+  }
+  .lang-btn[aria-pressed="true"] {
+    border-color: var(--moss);
+    background: var(--card-bg);
+    opacity: 1;
+  }
 
   /* ── Theme toggle ─────────────────────────────────────── */
   .theme-toggle {
@@ -496,10 +530,17 @@
   <main class="page">
 
     <header class="masthead">
-      <span class="kicker">Software Engineer · Ørsta/Oslo - Norway</span>
+      <span class="kicker" data-i18n="masthead-kicker">Software Engineer · Ørsta/Oslo - Norway</span>
       <span class="spacer"></span>
+      <div class="lang-toggle-group" role="group" aria-label="Language / Språk">
+        <button type="button" class="lang-btn" data-lang="en"
+                aria-label="English" aria-pressed="true" title="English">🇬🇧</button>
+        <button type="button" class="lang-btn" data-lang="no"
+                aria-label="Norsk" aria-pressed="false" title="Norsk">🇳🇴</button>
+      </div>
       <button type="button" class="hc-toggle" id="hc-toggle"
-              aria-label="Toggle high contrast" title="Toggle high contrast">
+              aria-label="Toggle high contrast" title="Toggle high contrast"
+              data-i18n-aria="hc-toggle-label">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"
              stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
@@ -508,7 +549,8 @@
         </svg>
       </button>
       <button type="button" class="theme-toggle" id="theme-toggle"
-              aria-label="Toggle dark mode" title="Toggle dark mode">
+              aria-label="Toggle dark mode" title="Toggle dark mode"
+              data-i18n-aria="theme-toggle-label">
         <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
              stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
@@ -523,7 +565,7 @@
 
     <section class="title-block">
       <h1>Eirik Hoem</h1>
-      <p class="lede">
+      <p class="lede" data-i18n="lede">
         I'm a software engineer with more than two decades of experience across web,
         mobile, and real-time systems. Today I lead engineering at
         <strong>Tana</strong>, reinventing how humans, teams, and computers work together.
@@ -532,21 +574,21 @@
 
     <!-- ── Experience ─────────────────────────────────── -->
     <section class="section">
-      <h2 class="section-head">Experience</h2>
+      <h2 class="section-head" data-i18n="section-experience">Experience</h2>
 
       <article class="company">
         <div class="company-head">
           <h3 class="company-name"><a href="https://tana.inc/" target="_blank" rel="noopener">Tana Inc</a></h3>
-          <span class="company-meta">Full-time · 5 yrs 6 mos</span>
+          <span class="company-meta" data-i18n="tana-meta">Full-time · 5 yrs 6 mos</span>
         </div>
 
-        <p class="company-about">
+        <p class="company-about" data-i18n="tana-about-1">
           Tana is an AI-native workspace that blends notes, tasks, and knowledge into a
           single, structured graph. Instead of scattering information across documents,
           everything in Tana is a node that can carry fields, relationships, and context -
           so your notes become living data you can query, reshape, and build on.
         </p>
-        <p class="company-about">
+        <p class="company-about" data-i18n="tana-about-2">
           On top of that graph, Tana layers AI agents and "supertags" that turn freeform
           capture into actionable workflows: meeting notes that summarize themselves,
           tasks that route to the right place, and personal knowledge that compounds over
@@ -556,36 +598,36 @@
 
         <div class="role">
           <div class="role-head">
-            <span class="role-title">Vice President of Engineering</span>
-            <span class="role-dates">Sep 2024 - Present</span>
+            <span class="role-title" data-i18n="vpe-title">Vice President of Engineering</span>
+            <span class="role-dates" data-i18n="vpe-dates">Sep 2024 - Present</span>
           </div>
-          <span class="role-loc">Ørsta / Oslo, Norway</span>
-          <p class="role-desc">Reinventing how humans, teams, and computers work together.</p>
+          <span class="role-loc" data-i18n="vpe-loc">Ørsta / Oslo, Norway</span>
+          <p class="role-desc" data-i18n="vpe-desc">Reinventing how humans, teams, and computers work together.</p>
         </div>
 
         <div class="role">
           <div class="role-head">
-            <span class="role-title">Founding Engineer</span>
-            <span class="role-dates">Jan 2021 - Sep 2024</span>
+            <span class="role-title" data-i18n="founding-title">Founding Engineer</span>
+            <span class="role-dates" data-i18n="founding-dates">Jan 2021 - Sep 2024</span>
           </div>
-          <span class="role-loc">Ørsta, Norway</span>
-          <p class="role-desc">Building a bicycle for your mind.</p>
+          <span class="role-loc" data-i18n="founding-loc">Ørsta, Norway</span>
+          <p class="role-desc" data-i18n="founding-desc">Building a bicycle for your mind.</p>
         </div>
       </article>
 
       <article class="company">
         <div class="company-head">
           <h3 class="company-name"><a href="https://www.twoday.com/" target="_blank" rel="noopener">Avento AS</a></h3>
-          <span class="company-meta">Full-time · 2 yrs 9 mos</span>
+          <span class="company-meta" data-i18n="avento-meta">Full-time · 2 yrs 9 mos</span>
         </div>
 
         <div class="role">
           <div class="role-head">
-            <span class="role-title">Senior Consultant</span>
-            <span class="role-dates">Aug 2019 - Apr 2022</span>
+            <span class="role-title" data-i18n="avento-role-title">Senior Consultant</span>
+            <span class="role-dates" data-i18n="avento-dates">Aug 2019 - Apr 2022</span>
           </div>
-          <span class="role-loc">Ørsta/Ålesund, Norway</span>
-          <p class="role-desc">
+          <span class="role-loc" data-i18n="avento-loc">Ørsta/Ålesund, Norway</span>
+          <p class="role-desc" data-i18n="avento-desc">
             A diverse range of responsibilities including project estimation &amp; planning,
             mobile app and application development, and mentoring junior developers. Served as
             CTO-by-hire for Tikkio and worked on projects for clients such as BagID, Pretre, and NTNU.
@@ -598,16 +640,16 @@
       <article class="company">
         <div class="company-head">
           <h3 class="company-name">Warm Systems AS</h3>
-          <span class="company-meta">Full-time · 8 yrs 11 mos</span>
+          <span class="company-meta" data-i18n="warm-meta">Full-time · 8 yrs 11 mos</span>
         </div>
 
         <div class="role">
           <div class="role-head">
-            <span class="role-title">Lead Programmer</span>
-            <span class="role-dates">Jan 2011 - Jul 2019</span>
+            <span class="role-title" data-i18n="warm-lead-title">Lead Programmer</span>
+            <span class="role-dates" data-i18n="warm-lead-dates">Jan 2011 - Jul 2019</span>
           </div>
-          <span class="role-loc">Oslo, Norway</span>
-          <p class="role-desc">
+          <span class="role-loc" data-i18n="warm-lead-loc">Oslo, Norway</span>
+          <p class="role-desc" data-i18n="warm-lead-desc">
             Lead programmer for Sukker.no, the leading dating site in Norway. Managed the
             development team and oversaw full-stack development of internet dating solutions -
             APIs, websites, single-page applications, hybrid iOS/Android apps, and administration
@@ -618,11 +660,11 @@
 
         <div class="role">
           <div class="role-head">
-            <span class="role-title">Software Developer</span>
-            <span class="role-dates">Sep 2010 - Jan 2011</span>
+            <span class="role-title" data-i18n="warm-dev-title">Software Developer</span>
+            <span class="role-dates" data-i18n="warm-dev-dates">Sep 2010 - Jan 2011</span>
           </div>
-          <span class="role-loc">Oslo, Norway</span>
-          <p class="role-desc">
+          <span class="role-loc" data-i18n="warm-dev-loc">Oslo, Norway</span>
+          <p class="role-desc" data-i18n="warm-dev-desc">
             Primarily working on Sukker.no - maintenance, testing, new features, and optimization.
           </p>
         </div>
@@ -631,16 +673,16 @@
       <article class="company">
         <div class="company-head">
           <h3 class="company-name">Telio Telecom AS</h3>
-          <span class="company-meta">Full-time · 5 yrs 2 mos</span>
+          <span class="company-meta" data-i18n="telio-meta">Full-time · 5 yrs 2 mos</span>
         </div>
 
         <div class="role">
           <div class="role-head">
-            <span class="role-title">Software Developer</span>
-            <span class="role-dates">Dec 2006 - Sep 2010</span>
+            <span class="role-title" data-i18n="telio-dev-title">Software Developer</span>
+            <span class="role-dates" data-i18n="telio-dev-dates">Dec 2006 - Sep 2010</span>
           </div>
-          <span class="role-loc">Oslo, Norway</span>
-          <p class="role-desc">
+          <span class="role-loc" data-i18n="telio-dev-loc">Oslo, Norway</span>
+          <p class="role-desc" data-i18n="telio-dev-desc">
             Planning and implementing system services, front-end applications (customer self-care,
             ordering pages, internal tools), rich internet applications, and database design.
             Flash applications / widgets on devices, Asterisk AGI applications, and real-time
@@ -650,11 +692,11 @@
 
         <div class="role">
           <div class="role-head">
-            <span class="role-title">2nd Line Support (EPMG)</span>
-            <span class="role-dates">Dec 2006</span>
+            <span class="role-title" data-i18n="telio-2nd-title">2nd Line Support (EPMG)</span>
+            <span class="role-dates" data-i18n="telio-2nd-dates">Dec 2006</span>
           </div>
-          <span class="role-loc">Oslo, Norway</span>
-          <p class="role-desc">
+          <span class="role-loc" data-i18n="telio-2nd-loc">Oslo, Norway</span>
+          <p class="role-desc" data-i18n="telio-2nd-desc">
             2nd line technical support / end-point management, continuing development of internal
             support applications.
           </p>
@@ -662,22 +704,22 @@
 
         <div class="role">
           <div class="role-head">
-            <span class="role-title">NOC Operator</span>
-            <span class="role-dates">May 2006 - Dec 2006</span>
+            <span class="role-title" data-i18n="telio-noc-title">NOC Operator</span>
+            <span class="role-dates" data-i18n="telio-noc-dates">May 2006 - Dec 2006</span>
           </div>
-          <span class="role-loc">Oslo, Norway</span>
-          <p class="role-desc">
+          <span class="role-loc" data-i18n="telio-noc-loc">Oslo, Norway</span>
+          <p class="role-desc" data-i18n="telio-noc-desc">
             Monitoring network components and applications to ensure uninterrupted service.
           </p>
         </div>
 
         <div class="role">
           <div class="role-head">
-            <span class="role-title">1st Line Support</span>
-            <span class="role-dates">Aug 2005 - Dec 2006</span>
+            <span class="role-title" data-i18n="telio-1st-title">1st Line Support</span>
+            <span class="role-dates" data-i18n="telio-1st-dates">Aug 2005 - Dec 2006</span>
           </div>
-          <span class="role-loc">Oslo, Norway</span>
-          <p class="role-desc">
+          <span class="role-loc" data-i18n="telio-1st-loc">Oslo, Norway</span>
+          <p class="role-desc" data-i18n="telio-1st-desc">
             Customer support - assisting customers connecting VoIP terminals and debugging
             problems. Built an internal documentation portal and developed internal support tools.
           </p>
@@ -687,23 +729,23 @@
 
     <!-- ── Projects ───────────────────────────────────── -->
     <section class="section">
-      <h2 class="section-head">Projects</h2>
+      <h2 class="section-head" data-i18n="section-projects">Projects</h2>
 
       <a class="project-card" href="projects/water-calculator/">
         <h3>Bryggekalkulator - Vannjustering</h3>
-        <p>
+        <p data-i18n="project-water-desc">
           A water-adjustment calculator for homebrewing, based on Gahr Smith-Gahrsen's
           mineral-addition table for Norwegian brewing water.
         </p>
-        <span class="arrow">Open project →</span>
+        <span class="arrow" data-i18n="project-arrow">Open project →</span>
       </a>
     </section>
 
     <!-- ── Personal ───────────────────────────────────── -->
     <section class="section">
-      <h2 class="section-head">Personal</h2>
+      <h2 class="section-head" data-i18n="section-personal">Personal</h2>
 
-      <p class="personal-lede">
+      <p class="personal-lede" data-i18n="personal-lede">
         Outside of work I'm a keen homebrewer, with a soft spot for dark and
         big beers. My seasonal pursuits run to the outdoors - mushroom foraging
         in autumn and big game hunting.
@@ -715,8 +757,8 @@
       </figure>
 
       <div class="accolade">
-        <h3>Homebrewing - Norwegian Championship</h3>
-        <p>
+        <h3 data-i18n="accolade-homebrew-title">Homebrewing - Norwegian Championship</h3>
+        <p data-i18n="accolade-homebrew-desc">
           1st place in the <em>Dark ale</em> category at the
           <a href="https://norbrygg.no/nyheter/2026-05-01/finaleresultater-nm-i-hjemmebrygging-2026/" target="_blank" rel="noopener">2026 Norwegian Homebrewers Championship</a>,
           and 2nd place in the same category in
@@ -725,16 +767,16 @@
       </div>
 
       <div class="accolade">
-        <h3>Recipe — "Futen II" English Barleywine (2024)</h3>
-        <p>
+        <h3 data-i18n="accolade-futen-title">Recipe — "Futen II" English Barleywine (2024)</h3>
+        <p data-i18n="accolade-futen-desc">
           My English barleywine recipe is shared over on
           <a href="https://web.brewfather.app/share/oPSDR84vSQLvhQ" target="_blank" rel="noopener">Brewfather</a>.
         </p>
       </div>
 
       <div class="accolade">
-        <h3>Recipe — <em>Casterbridge Reserve</em> (2026)</h3>
-        <p>
+        <h3 data-i18n="accolade-casterbridge-title">Recipe — <em>Casterbridge Reserve</em> (2026)</h3>
+        <p data-i18n="accolade-casterbridge-desc">
           The championship-winning recipe from the 2026 Norwegian Homebrewers Championship
           is on its way — I'll be publishing the full recipe and brew notes here shortly.
         </p>
@@ -743,34 +785,34 @@
 
     <!-- ── Contact ────────────────────────────────────── -->
     <section class="section">
-      <h2 class="section-head">Contact</h2>
+      <h2 class="section-head" data-i18n="section-contact">Contact</h2>
 
       <ul class="contact-list">
         <li>
-          <span class="contact-label">Email</span>
+          <span class="contact-label" data-i18n="contact-label-email">Email</span>
           <a href="mailto:eirikhm@gmail.com">eirikhm@gmail.com</a>
         </li>
         <li>
-          <span class="contact-label">Work Email</span>
+          <span class="contact-label" data-i18n="contact-label-work-email">Work Email</span>
           <a href="mailto:eirik@tana.inc">eirik@tana.inc</a>
         </li>
         <li>
-          <span class="contact-label">LinkedIn</span>
+          <span class="contact-label" data-i18n="contact-label-linkedin">LinkedIn</span>
           <a href="https://www.linkedin.com/in/eirikhm" target="_blank" rel="noopener">linkedin.com/in/eirikhm</a>
         </li>
         <li>
-          <span class="contact-label">X / Twitter</span>
+          <span class="contact-label" data-i18n="contact-label-twitter">X / Twitter</span>
           <a href="https://x.com/eirikhm" target="_blank" rel="noopener">x.com/eirikhm</a>
         </li>
         <li>
-          <span class="contact-label">GitHub</span>
+          <span class="contact-label" data-i18n="contact-label-github">GitHub</span>
           <a href="https://github.com/eirikhm" target="_blank" rel="noopener">github.com/eirikhm</a>
         </li>
       </ul>
     </section>
 
     <footer class="colophon">
-      <p>© <span id="year"></span> Eirik Hoem · Ørsta / Oslo, Norway</p>
+      <p data-i18n="colophon">© <span id="year"></span> Eirik Hoem · Ørsta / Oslo, Norway</p>
     </footer>
 
   </main>
@@ -778,6 +820,7 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
+    // ── Theme toggle ───────────────────────────────────────────────
     (function () {
       var root = document.documentElement;
       var storageKey = 'theme';
@@ -791,7 +834,6 @@
       try { stored = localStorage.getItem(storageKey); } catch (e) {}
       apply(stored || (media.matches ? 'dark' : 'light'));
 
-      // Follow OS changes unless the user has set an explicit preference.
       media.addEventListener('change', function (e) {
         var saved = null;
         try { saved = localStorage.getItem(storageKey); } catch (err) {}
@@ -805,7 +847,7 @@
       });
     })();
 
-    // High contrast toggle — in-memory only, no persistence.
+    // ── High contrast toggle ───────────────────────────────────────
     (function () {
       var root = document.documentElement;
       var hcOn = false;
@@ -814,6 +856,90 @@
         root.setAttribute('data-hc', hcOn ? 'on' : 'off');
         this.setAttribute('aria-pressed', hcOn);
       });
+    })();
+
+    // ── i18n ───────────────────────────────────────────────────────
+    (function () {
+      var LANG_KEY = 'lang';
+      var translations = null;
+
+      function getSavedLang() {
+        try { return localStorage.getItem(LANG_KEY) || 'en'; } catch (e) { return 'en'; }
+      }
+
+      function saveLang(lang) {
+        try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
+      }
+
+      function applyLang(lang) {
+        if (!translations) return;
+        var t = translations[lang] || translations['en'];
+
+        // html[lang] attribute
+        document.documentElement.lang = lang === 'no' ? 'nb' : 'en';
+
+        // <title>
+        if (t['page-title']) document.title = t['page-title'];
+
+        // <meta name="description">
+        var metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc && t['meta-description']) {
+          metaDesc.setAttribute('content', t['meta-description']);
+        }
+
+        // All data-i18n elements (innerHTML so rich text & links work)
+        document.querySelectorAll('[data-i18n]').forEach(function (el) {
+          var key = el.getAttribute('data-i18n');
+          if (t[key] !== undefined) el.innerHTML = t[key];
+        });
+
+        // Re-stamp the year (innerHTML above replaces the span)
+        var yearEl = document.getElementById('year');
+        if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+        // aria-label on utility buttons
+        document.querySelectorAll('[data-i18n-aria]').forEach(function (el) {
+          var key = el.getAttribute('data-i18n-aria');
+          if (t[key]) {
+            el.setAttribute('aria-label', t[key]);
+            el.setAttribute('title', t[key]);
+          }
+        });
+
+        // Flag button active states
+        document.querySelectorAll('.lang-btn').forEach(function (btn) {
+          var active = btn.getAttribute('data-lang') === lang;
+          btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+      }
+
+      function init() {
+        var lang = getSavedLang();
+
+        fetch('translations.json')
+          .then(function (r) { return r.json(); })
+          .then(function (data) {
+            translations = data;
+            applyLang(lang);
+          })
+          .catch(function (err) {
+            console.warn('Could not load translations.json:', err);
+          });
+
+        document.querySelectorAll('.lang-btn').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var newLang = this.getAttribute('data-lang');
+            saveLang(newLang);
+            applyLang(newLang);
+          });
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
     })();
   </script>
 </body>
