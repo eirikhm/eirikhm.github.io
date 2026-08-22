@@ -11,12 +11,18 @@
 <script>
   // Set theme before first paint to avoid a flash of the wrong color scheme.
   (function () {
-    try {
-      var saved = localStorage.getItem('theme');
-      var dark = saved ? saved === 'dark'
-                       : window.matchMedia('(prefers-color-scheme: dark)').matches;
-      document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
-    } catch (e) {}
+    var saved = null;
+    // Storage access can throw (private mode, blocked cookies) - never let
+    // that stop the theme from being applied.
+    try { saved = localStorage.getItem('theme'); } catch (e) {}
+    var dark;
+    if (saved === 'dark' || saved === 'light') {
+      dark = saved === 'dark';
+    } else {
+      dark = !!(window.matchMedia &&
+                window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
   })();
 </script>
 <style>
@@ -58,6 +64,30 @@
 
   html { color-scheme: light; }
   html[data-theme="dark"] { color-scheme: dark; }
+
+  /* Fallback for when no explicit theme has been applied to the document
+     (scripting unavailable or blocked): follow the OS preference in CSS. */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+      --paper:        #14160f;
+      --paper-deep:   #1b1e15;
+      --ink:          #ece7d8;
+      --ink-soft:     #b9b6a6;
+      --ink-mute:     #7e8175;
+      --rule:         #353a2c;
+      --rule-soft:    #2a2e22;
+      --moss:         #7fa173;
+      --moss-deep:    #a7c79a;
+      --copper:       #d08a52;
+      --glow-moss:    rgba(127, 161, 115, 0.06);
+      --glow-copper:  rgba(208, 138, 82, 0.06);
+      --card-bg:      rgba(127, 161, 115, 0.08);
+      --card-bg-hover:rgba(127, 161, 115, 0.14);
+    }
+    html:not([data-theme]) { color-scheme: dark; }
+    html:not([data-theme]) .theme-toggle .icon-sun { display: block; }
+    html:not([data-theme]) .theme-toggle .icon-moon { display: none; }
+  }
 
   *, *::before, *::after { box-sizing: border-box; }
 
@@ -522,7 +552,8 @@
         </svg>
       </button>
       <button type="button" class="theme-toggle" id="theme-toggle"
-              aria-label="Toggle dark mode" title="Toggle dark mode">
+              aria-pressed="false"
+              aria-label="Switch to dark mode" title="Switch to dark mode">
         <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
              stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
@@ -840,28 +871,57 @@
     (function () {
       var root = document.documentElement;
       var storageKey = 'theme';
-      var media = window.matchMedia('(prefers-color-scheme: dark)');
+      var toggle = document.getElementById('theme-toggle');
+      var media = window.matchMedia
+        ? window.matchMedia('(prefers-color-scheme: dark)')
+        : null;
 
-      function apply(theme) {
-        root.setAttribute('data-theme', theme);
+      // Only 'light' and 'dark' are valid stored preferences; anything else
+      // (missing, stale or corrupt) falls back to the OS preference.
+      function storedTheme() {
+        var value = null;
+        try { value = localStorage.getItem(storageKey); } catch (e) {}
+        return value === 'dark' || value === 'light' ? value : null;
       }
 
-      var stored = null;
-      try { stored = localStorage.getItem(storageKey); } catch (e) {}
-      apply(stored || (media.matches ? 'dark' : 'light'));
+      function systemTheme() {
+        return media && media.matches ? 'dark' : 'light';
+      }
+
+      function apply(theme) {
+        var isDark = theme === 'dark';
+        root.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        if (toggle) {
+          var label = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+          toggle.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+          toggle.setAttribute('aria-label', label);
+          toggle.setAttribute('title', label);
+        }
+      }
+
+      apply(storedTheme() || systemTheme());
+
+      // Attach the toggle first so it always works, even if the media-query
+      // listener below is unsupported by the browser.
+      if (toggle) {
+        toggle.addEventListener('click', function () {
+          var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+          apply(next);
+          try { localStorage.setItem(storageKey, next); } catch (e) {}
+        });
+      }
 
       // Follow OS changes unless the user has set an explicit preference.
-      media.addEventListener('change', function (e) {
-        var saved = null;
-        try { saved = localStorage.getItem(storageKey); } catch (err) {}
-        if (!saved) apply(e.matches ? 'dark' : 'light');
-      });
-
-      document.getElementById('theme-toggle').addEventListener('click', function () {
-        var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        apply(next);
-        try { localStorage.setItem(storageKey, next); } catch (e) {}
-      });
+      if (media) {
+        var onSystemChange = function (e) {
+          if (!storedTheme()) apply(e.matches ? 'dark' : 'light');
+        };
+        if (media.addEventListener) {
+          media.addEventListener('change', onSystemChange);
+        } else if (media.addListener) {
+          media.addListener(onSystemChange);
+        }
+      }
     })();
 
     // High contrast toggle — in-memory only, no persistence.
